@@ -2,6 +2,7 @@ from docx import Document
 from docx.shared import Cm
 from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+from docx.enum.section import WD_ORIENT
 from docx.oxml.ns import qn
 from docx.shared import Pt, RGBColor
 
@@ -62,6 +63,19 @@ def creat_docx(data: OutputWord):
         case 2:
             for i in range(0, data.file_count, 2):
                 doc = add_table_two_of_page_vertical(doc, data.align_vertical, images[i:i + 2], i + 1)
+                webview.windows[0].evaluate_js(f"window.pywebview.updateProgress({i})")
+        case 4:
+            section = doc.sections[-1]
+            # 1. 取得原本的寬與高
+            current_width = section.page_width
+            current_height = section.page_height
+            # 2. 設定方向為橫向
+            section.orientation = WD_ORIENT.LANDSCAPE
+            # 3. 關鍵步驟：手動交換寬與高，否則版面會出錯
+            section.page_width = current_height
+            section.page_height = current_width
+            for i in range(0, data.file_count, 4):
+                doc = add_table_four_of_page(doc, data.align_vertical, images[i:i + 4], i + 1)
                 webview.windows[0].evaluate_js(f"window.pywebview.updateProgress({i})")
         case 6:
             for i in range(0, data.file_count, 3):
@@ -254,6 +268,76 @@ def add_table_six_of_page(doc, align, images: list[SaveImage], index):
                 max_width=5,
             )
 
+        return doc
+
+    except Exception as e:
+        log().exception(str(e))
+
+
+def add_table_four_of_page(doc, align, images: list[SaveImage], index):
+    """
+    建立一頁4張圖片的表格
+    :param doc: 傳入的doc文件
+    :param align: 對齊
+    :param images: 傳入的圖片物件清單，最多會傳入四張圖片
+    :param index: 序號，已經轉換成從1開始
+    :return: 回傳doc文件
+    """
+    try:
+        # 創建4*3的空表格
+        table = doc.add_table(rows=3, cols=4, style='Table Grid')
+        # 設定Row的高度
+        table.rows[0].height = Cm(10)
+        table.rows[1].height = Cm(0.6)
+        table.rows[2].height = Cm(3.9)
+        # 設定Col的寬度
+        for i in range(0, 3):
+            for cell in table.columns[i].cells:
+                cell.width = Cm(6.25)
+
+        handle_table_write(
+            image=images[0],
+            align=align,
+            index=index,
+            image_cell=table.cell(0, 0),
+            number_cell=table.cell(1, 0),
+            remark_cell=table.cell(2, 0),
+            max_height=10,
+            max_width=6,
+        )
+        if len(images) >= 2:
+            handle_table_write(
+                image=images[1],
+                align=align,
+                index=index + 1,
+                image_cell=table.cell(0, 1),
+                number_cell=table.cell(1, 1),
+                remark_cell=table.cell(2, 1),
+                max_height=10,
+                max_width=6,
+            )
+        if len(images) >= 3:
+            handle_table_write(
+                image=images[2],
+                align=align,
+                index=index + 2,
+                image_cell=table.cell(0, 2),
+                number_cell=table.cell(1, 2),
+                remark_cell=table.cell(2, 2),
+                max_height=10,
+                max_width=6,
+            )
+        if len(images) >= 4:
+            handle_table_write(
+                image=images[3],
+                align=align,
+                index=index + 3,
+                image_cell=table.cell(0, 3),
+                number_cell=table.cell(1, 3),
+                remark_cell=table.cell(2, 3),
+                max_height=10,
+                max_width=6,
+            )
         return doc
 
     except Exception as e:

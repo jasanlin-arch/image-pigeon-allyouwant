@@ -5,7 +5,9 @@ export const CHANGELOG_LIST: Array<TVersionObject> = [
     version: '1.6.4',
     date: '1150129',
     logs: [
-      {color: "new", text: '加入README彈出視窗。'},
+      {color: "new", text: '加入一頁四張照片的Word排版。'},
+      {color: "new", text: '加入README功能介紹。'},
+      {color: "new", text: '現在執行完畢後會自動開啟資料夾或檔案。'},
       {color: "fix", text: '修復部分長截圖無法切割的問題。'},
     ]
   },

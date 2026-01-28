@@ -18,7 +18,7 @@ export interface OutputBaseData {
 }
 
 export interface OutputWord extends OutputBaseData {
-  mode: '1' | '2' | '6',
+  mode: '1' | '2' | '4' | '6',
   align_vertical: 'top' | 'center',
   font_size: '10' | '11' | '12' | '13' | '14',
 }

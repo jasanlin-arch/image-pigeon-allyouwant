@@ -75,9 +75,10 @@ export default function SaveWord({images}: Props) {
         <select className="select w-full"
                 {...register('mode', {required: '請選擇此欄位'})}>
           <option value=''>請選擇</option>
-          <option value='1'>一頁 2 張（上下排佈，適用橫式圖片）</option>
-          <option value='2'>一頁 2 張（左右排佈，適用直式圖片）</option>
-          <option value='6'>一頁 6 張（適用直式圖片)</option>
+          <option value='1'>一頁 2 張（直印 / 上下排佈 / 適用橫式圖片）</option>
+          <option value='2'>一頁 2 張（直印 / 左右排佈 / 適用直式圖片）</option>
+          <option value='4'>一頁 4 張（橫印 / 左右排佈 / 適用直式圖片）</option>
+          <option value='6'>一頁 6 張（直印 / 分散排佈 / 適用直式圖片）</option>
         </select>
       </FormInputCol>
       <Col xs={12} className='mt-6'>

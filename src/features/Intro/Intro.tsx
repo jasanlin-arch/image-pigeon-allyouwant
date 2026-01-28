@@ -46,7 +46,7 @@ export default function Intro() {
               <ModalTip/>
             </Col>
           </Row>
-          <div className='divider my-1'></div>
+          <div className='divider my-1 text-xs'>關於此軟體</div>
           <div className='grid grid-cols-5 gap-2 font-bold text-gray-300'>
             <div className='flex justify-start items-center'>
               <BsFillPersonLinesFill className='mr-2'/>

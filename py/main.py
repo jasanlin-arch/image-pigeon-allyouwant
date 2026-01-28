@@ -9,7 +9,7 @@ from upload_imags import UploadImage
 from crop_image import LongScreenImage, crop_to_images
 from save_images import SaveAsImages, save
 
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 
 def get_root_path():
@@ -74,6 +74,7 @@ class Api:
         try:
             doc.save(data.path)
             log().info('儲存成功，執行完畢')
+            os.startfile(data.path)
             return Response(200, '儲存成功').to_dict()
         except PermissionError:
             log().exception('有相同檔名未關閉', exc_info=True)
