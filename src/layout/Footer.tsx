@@ -20,15 +20,16 @@ export default function Footer({images, setImages, isMoveMode, setIsMoveMode}: P
       <div className='w-52'>
         <div className='font-bold'>是否清除全部圖片？</div>
         <div className='text-sm text-error text-start'>此操作無法復原</div>
-        <div className='flex justify-between mt-2'>
-          <button className='btn btn-sm btn-success' onClick={() => {
+        <div className='flex justify-end mt-2'>
+          <Button size='sm' color='error' onClick={() => {
             toast.dismiss(t.id);
             setImages([]);
           }}>
             確定
-          </button>
-          <button className='btn btn-sm ml-2' onClick={() => toast.dismiss(t.id)}>取消
-          </button>
+          </Button>
+          <Button size='sm' className='ml-2' onClick={() => toast.dismiss(t.id)}>
+            取消
+          </Button>
         </div>
       </div>
     ))
@@ -42,7 +43,7 @@ export default function Footer({images, setImages, isMoveMode, setIsMoveMode}: P
               onClick={onClear}>
         <MdDeleteForever/>全部清除
       </Button>
-      <Button color='accent' size='sm' style={isMoveMode ? undefined : 'outline'} className='w-full'
+      <Button color='info' size='sm' style={isMoveMode ? undefined : 'outline'} className='w-full'
               onClick={() => {
                 setIsMoveMode(p => !p)
               }}>

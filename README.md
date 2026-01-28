@@ -1,54 +1,44 @@
-# React + TypeScript + Vite
+# 貼圖小鴿手
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 這是什麼
 
-Currently, two official plugins are available:
+現場照片、對話截圖、轉帳明細、監視器畫面......
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+你是否因為如何整理這些照片而苦惱呢？
 
-## Expanding the ESLint configuration
+放心！這個小工具就是來解決你的困擾的！
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### 特色功能
+- 自動帶入備註
+- 自動壓縮圖片
+- 自動分割長截圖
+- 排序、旋轉、合併圖片
+- 儲存Word/壓縮過的圖片/專用檔案
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 能做什麼
+#### 我想快速製作黏貼表
+1. 編輯預設備註，匯入圖片
+2. 修改個別備註、排序照片
+3. 輸出成Word檔，完成！
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+#### 我想整理照片
+1. 匯入所有圖片
+2. 使用「排序模式」快速排序圖片
+3. 輸出圖片，就能得到壓縮且有序的圖片！
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+#### 我想保留編輯紀錄
+1. 匯入圖片，編輯及排序
+2. 另存成「貼圖小鴿手」專用檔案
+3. 下次即可「讀取舊檔」，繼續編輯！
+
+`Tip`
+如果您有任何問題或意見，歡迎到[鴿手](https://pigeonhand.tw/feedback/web?option=2)中回饋讓我知道！
+
+---
+
+### 免責聲明
+- 本程式使用 Python + React 編寫而成，除自動檢測更新功能外，其餘功能均不連網，不涉及任何上傳資料至網際網路的功能。
+- 本程式用途只限於將使用者指定的檔案，進行讀取、複製、壓縮、另存新檔等操作，不涉及任何刪除、修改原檔案的功能。
+- 如您對上列事項有任何顧慮，請立即關閉並刪除此軟體，否則視為您已同意本聲明。
+- 本程式原始碼分享於[GitHub](https://github.com/srhkami/image-pigeon.git)，歡迎自行克隆倉庫運用。

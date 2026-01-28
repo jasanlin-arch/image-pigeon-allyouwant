@@ -13,8 +13,8 @@ app_logger.addHandler(handler_txt)
 
 
 def log():
-  """
-  調用此函數，用來輸出或顯示記錄檔
-  :return:
-  """
-  return app_logger
+    """
+    調用此函數，用來輸出或顯示記錄檔
+    :return:
+    """
+    return app_logger

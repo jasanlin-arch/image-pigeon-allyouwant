@@ -2,6 +2,14 @@ import {TVersionObject} from "@/utils/type.ts";
 
 export const CHANGELOG_LIST: Array<TVersionObject> = [
   {
+    version: '1.6.4',
+    date: '1150129',
+    logs: [
+      {color: "new", text: '加入README彈出視窗。'},
+      {color: "fix", text: '修復部分長截圖無法切割的問題。'},
+    ]
+  },
+  {
     version: '1.6.3',
     date: '1141031',
     logs: [
@@ -136,4 +144,5 @@ export const CHANGELOG_LIST: Array<TVersionObject> = [
   }
 ]
 
-export const AppVersion = `${CHANGELOG_LIST[0].version}（${CHANGELOG_LIST[0].date}）`
+export const AppVersion = CHANGELOG_LIST[0].version
+export const AppVersionText = `${CHANGELOG_LIST[0].version}（${CHANGELOG_LIST[0].date}）`

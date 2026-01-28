@@ -1,4 +1,5 @@
 import json
+import sys
 import webview
 import os.path
 from save_docx import creat_docx, add_header, OutputWord
@@ -8,158 +9,175 @@ from upload_imags import UploadImage
 from crop_image import LongScreenImage, crop_to_images
 from save_images import SaveAsImages, save
 
-DEBUG_MODE = False
+DEBUG_MODE = True
+
+
+def get_root_path():
+    # 如果是打包後的 exe
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(sys.executable)
+    # 如果是開發環境的 .py
+    else:
+        return os.path.dirname(os.path.abspath(__file__))
+
+
+# 瀏覽器緩存路徑 (如果你還是想讓 localStorage 生效)
+CACHE_DIR = os.path.join(get_root_path(), "web_cache")
 
 
 class Api:
 
-  def upload_image(self, request):
-    """
-    將單張的上傳圖片壓縮後再傳回前端
-    :param request:
-    :return:
-    """
-    data = UploadImage(request)
-    try:
-      base64_image = data.compress_image()
-      return Response(status=200, data=base64_image).to_dict()
-    except Exception as e:
-      return Response(status=500, data=str(e)).to_dict()
+    def upload_image(self, request):
+        """
+        將單張的上傳圖片壓縮後再傳回前端
+        :param request:
+        :return:
+        """
+        data = UploadImage(request)
+        try:
+            base64_image = data.compress_image()
+            return Response(status=200, data=base64_image).to_dict()
+        except Exception as e:
+            return Response(status=500, data=str(e)).to_dict()
 
-  def crop_image(self, request):
-    """
-    切割長截圖
-    :param request
-    :return:
-    """
-    try:
-      image = LongScreenImage(request)
-      images = crop_to_images(image)
-      if not len(images):
-        log().error('此圖片不是長截圖')
-        return Response(400, '此圖片不是長截圖').to_dict()
-      log().info('分割成功，執行完畢')
-      return Response(200, '新增成功', images).to_dict()
-    except Exception as e:
-      log().exception(str(e), exc_info=True)
-      return Response(500, '處理失敗，請回報作者').to_dict()
+    def crop_image(self, request):
+        """
+        切割長截圖
+        :param request
+        :return:
+        """
+        try:
+            image = LongScreenImage(request)
+            images = crop_to_images(image)
+            if not len(images):
+                log().error('此圖片不是長截圖')
+                return Response(400, '此圖片不是長截圖').to_dict()
+            log().info('分割成功，執行完畢')
+            return Response(200, '新增成功', images).to_dict()
+        except Exception as e:
+            log().exception(str(e), exc_info=True)
+            return Response(500, '處理失敗，請回報作者').to_dict()
 
-  def save_docx(self, request):
-    """
-    儲存圖片成docx檔
-    :param request: 情求的資料
-    :return:
-    """
-    data = OutputWord(request)
-    log().info(f'【{data.title}】儲存Word開始執行')
-    log().info(json.dumps(data.to_dict(), ensure_ascii=False))
+    def save_docx(self, request):
+        """
+        儲存圖片成docx檔
+        :param request: 情求的資料
+        :return:
+        """
+        data = OutputWord(request)
+        log().info(f'【{data.title}】儲存Word開始執行')
+        log().info(json.dumps(data.to_dict(), ensure_ascii=False))
 
-    doc = creat_docx(data)
-    doc = add_header(doc, data.title)
+        doc = creat_docx(data)
+        doc = add_header(doc, data.title)
 
-    try:
-      doc.save(data.path)
-      log().info('儲存成功，執行完畢')
-      return Response(200, '儲存成功').to_dict()
-    except PermissionError:
-      log().exception('有相同檔名未關閉', exc_info=True)
-      return Response(500, '請先關閉相同檔名之檔案').to_dict()
-    except Exception as e:
-      log().exception(str(e), exc_info=True)
-      return Response(500, '處理失敗，請回報作者').to_dict()
+        try:
+            doc.save(data.path)
+            log().info('儲存成功，執行完畢')
+            return Response(200, '儲存成功').to_dict()
+        except PermissionError:
+            log().exception('有相同檔名未關閉', exc_info=True)
+            return Response(500, '請先關閉相同檔名之檔案').to_dict()
+        except Exception as e:
+            log().exception(str(e), exc_info=True)
+            return Response(500, '處理失敗，請回報作者').to_dict()
 
-  def save_images(self, request):
-    """
-    直接儲存壓縮後的圖片
-    :param request:
-    :return:
-    """
-    data = SaveAsImages(request)
-    log().info(f'【{data.title}】開始壓縮圖片')
-    log().info(json.dumps(data.to_dict(), ensure_ascii=False))
-    try:
-      save(data)
-      return Response(200, '儲存成功').to_dict()
-    except Exception as e:
-      log().exception(str(e), exc_info=True)
-      return Response(500, '處理失敗，請回報作者').to_dict()
+    def save_images(self, request):
+        """
+        直接儲存壓縮後的圖片
+        :param request:
+        :return:
+        """
+        data = SaveAsImages(request)
+        log().info(f'【{data.title}】開始壓縮圖片')
+        log().info(json.dumps(data.to_dict(), ensure_ascii=False))
+        try:
+            save(data)
+            return Response(200, '儲存成功').to_dict()
+        except Exception as e:
+            log().exception(str(e), exc_info=True)
+            return Response(500, '處理失敗，請回報作者').to_dict()
 
-  def save_json(self, request):
-    """
-    儲存JSON檔
-    :param request: 來自前端的圖片物件
-    :return:
-    """
-    data = OutputBaseData(request)
-    log().info(f'【{data.title}】開始儲存JSON')
-    new_files = []
-    for file in data.files:
-      new_files.append({
-        'base64': file.get('base64'),
-        'remark': file.get('remark'),
-        'width': file.get('width'),
-        'height': file.get('height'),
-        'rotation': file.get('rotation'),
-      })
-    try:
-      with open(data.path, 'w', encoding="utf-8") as file:
-        json.dump({'images': new_files}, file, ensure_ascii=False)
-      return Response(200, '儲存成功').to_dict()
-    except Exception as e:
-      log().exception(str(e), exc_info=True)
-      return Response(500, str(e)).to_dict()
+    def save_json(self, request):
+        """
+        儲存JSON檔
+        :param request: 來自前端的圖片物件
+        :return:
+        """
+        data = OutputBaseData(request)
+        log().info(f'【{data.title}】開始儲存JSON')
+        new_files = []
+        for file in data.files:
+            new_files.append({
+                'base64': file.get('base64'),
+                'remark': file.get('remark'),
+                'width': file.get('width'),
+                'height': file.get('height'),
+                'rotation': file.get('rotation'),
+            })
+        try:
+            with open(data.path, 'w', encoding="utf-8") as file:
+                json.dump({'images': new_files}, file, ensure_ascii=False)
+            return Response(200, '儲存成功').to_dict()
+        except Exception as e:
+            log().exception(str(e), exc_info=True)
+            return Response(500, str(e)).to_dict()
 
-  def select_path(self, data):
-    """
-    選擇路徑
-    :param data:
-    :return:
-    """
-    mode = data.get('mode')
-    title = data.get('title', '照片黏貼表')
-    match mode:
-      case 'word':
-        path: list = webview.windows[0].create_file_dialog(
-          webview.FileDialog.SAVE,
-          save_filename=f'{title}.docx',
-          file_types=('WORD 文件 (*.docx)',)
-        )
-      case 'json':
-        path: list = webview.windows[0].create_file_dialog(
-          webview.FileDialog.SAVE,
-          save_filename=f'{title}.json',
-          file_types=('JSON 文件 (*.json)',)
-        )
-      case 'images':
-        path: list = webview.windows[0].create_file_dialog(
-          webview.FileDialog.FOLDER,
-          allow_multiple=False
-        )
-      case _:
-        return Response(400, message='參數錯誤').to_dict()
-    # 返回的path均為一個清單，因此需要取得第一筆資料
-    file_path = path[0] if path else None
-    if not file_path:
-      error_text = '已取消儲存'
-      log().error(error_text)
-      return Response(400, error_text).to_dict()
-    log().info(f'選擇存檔位置：{file_path}')
-    return Response(200, file_path).to_dict()
+    def select_path(self, data):
+        """
+        選擇路徑
+        :param data:
+        :return:
+        """
+        mode = data.get('mode')
+        title = data.get('title', '照片黏貼表')
+        match mode:
+            case 'word':
+                path: list = webview.windows[0].create_file_dialog(
+                    webview.FileDialog.SAVE,
+                    save_filename=f'{title}.docx',
+                    file_types=('WORD 文件 (*.docx)',)
+                )
+            case 'json':
+                path: list = webview.windows[0].create_file_dialog(
+                    webview.FileDialog.SAVE,
+                    save_filename=f'{title}.json',
+                    file_types=('JSON 文件 (*.json)',)
+                )
+            case 'images':
+                path: list = webview.windows[0].create_file_dialog(
+                    webview.FileDialog.FOLDER,
+                    allow_multiple=False
+                )
+            case _:
+                return Response(400, message='參數錯誤').to_dict()
+        # 返回的path均為一個清單，因此需要取得第一筆資料
+        file_path = path[0] if path else None
+        if not file_path:
+            error_text = '已取消儲存'
+            log().error(error_text)
+            return Response(400, error_text).to_dict()
+        log().info(f'選擇存檔位置：{file_path}')
+        return Response(200, file_path).to_dict()
 
 
 if __name__ == '__main__':
-  if DEBUG_MODE:
-    log().error('注意！！DEBUG模式已開啟！！')
-  log().info('請耐心等待程式開啟......')
-  api = Api()
-  url = os.path.join(os.getcwd(), './html/index.html') if not DEBUG_MODE else 'http://localhost:5173'
-  window = webview.create_window(
-    title='貼圖小鴿手',
-    url=url,
-    js_api=api,
-    min_size=(800, 500),
-    maximized=True,
-    confirm_close=True,
-  )
-  log().debug('程式開啟成功')
-  webview.start(debug=DEBUG_MODE)
+    if DEBUG_MODE:
+        log().error('注意！！DEBUG模式已開啟！！')
+    log().info('請耐心等待程式開啟......')
+    api = Api()
+    url = os.path.join(os.getcwd(), './html/index.html') if not DEBUG_MODE else 'http://localhost:5173'
+    window = webview.create_window(
+        title='貼圖小鴿手',
+        url=url,
+        js_api=api,
+        min_size=(800, 500),
+        maximized=True,
+        confirm_close=True,
+    )
+    log().debug('程式開啟成功')
+    webview.start(
+        debug=DEBUG_MODE,
+        storage_path=CACHE_DIR,
+        private_mode=False,
+    )

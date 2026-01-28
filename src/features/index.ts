@@ -1,5 +1,5 @@
 export {default as ModalChangelog} from './About/ModalChangelog.tsx';
-export {default as ModalDisclaimer} from './About/ModalDisclaimer.tsx';
+export {default as ModalReadme} from './About/ModalReadme.tsx';
 export {default as ImagePreview} from './ImagePreview/ImagePreview.tsx';
 export {default as ImageCard} from './ImagePreview/ImageCard.tsx';
 export {default as Intro} from './Intro/Intro.tsx';

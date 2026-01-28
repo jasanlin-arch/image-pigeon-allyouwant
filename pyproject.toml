@@ -1,0 +1,11 @@
+[project]
+name = "image-pigeon"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.13"
+dependencies = [
+    "pillow>=12.1.0",
+    "pyinstaller>=6.18.0",
+    "python-docx>=1.2.0",
+    "pywebview>=6.1",
+]

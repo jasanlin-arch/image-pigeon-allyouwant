@@ -1,6 +1,6 @@
 import {BsFillPersonLinesFill} from "react-icons/bs";
 import {MdNumbers} from "react-icons/md";
-import {AppVersion} from "@/utils/log.ts";
+import {AppVersionText} from "@/utils/log.ts";
 import ModalTip from "./ModalTip.tsx";
 import ModalFeedback from "./ModalFeedback.tsx";
 import {Badge, Button, Col, Row} from "@/component";
@@ -65,7 +65,7 @@ export default function Intro() {
               版本
             </div>
             <div className='col-span-2 text-start flex items-center'>
-              {AppVersion}
+              {AppVersionText}
             </div>
             <div className='col-span-2 flex'>
               <a className='btn btn-info btn-sm btn-outline ml-auto' target='_blank'
