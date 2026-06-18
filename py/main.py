@@ -2,6 +2,12 @@ import json
 import sys
 import webview
 import os.path
+
+# 強制 stdout/stderr 使用 UTF-8，避免 Windows cp950 無法處理 emoji 而崩潰
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 from save_docx import creat_docx, add_header, OutputWord
 from handle_request import OutputBaseData, Response
 from handle_log import log
@@ -167,7 +173,19 @@ if __name__ == '__main__':
         log().error('注意！！DEBUG模式已開啟！！')
     log().info('請耐心等待程式開啟......')
     api = Api()
-    url = os.path.join(os.getcwd(), './html/index.html') if not DEBUG_MODE else 'http://localhost:5173'
+
+    if getattr(sys, 'frozen', False):
+        # 打包後的 EXE：從 _MEIPASS 暫存目錄找前端檔案
+        base_dir = sys._MEIPASS
+        url = os.path.join(base_dir, 'dist', 'index.html')
+    else:
+        # 開發模式：從專案根目錄找
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        if DEBUG_MODE:
+            url = 'http://localhost:5173'
+        else:
+            url = os.path.join(base_dir, 'dist', 'index.html')
+
     window = webview.create_window(
         title='貼圖小鴿手',
         url=url,

@@ -45,6 +45,15 @@ class OutputWord(OutputBaseData):
         }
 
 
+def _is_portrait(image: SaveImage) -> bool:
+    """判斷圖片是否為直式（高度 >= 寬度）"""
+    image.stream.seek(0)
+    img = Image.open(image.stream)
+    result = img.height >= img.width
+    image.stream.seek(0)
+    return result
+
+
 def creat_docx(data: OutputWord):
     """
     一頁兩張的函數
@@ -64,6 +73,35 @@ def creat_docx(data: OutputWord):
             for i in range(0, data.file_count, 2):
                 doc = add_table_two_of_page_vertical(doc, data.align_vertical, images[i:i + 2], i + 1)
                 webview.windows[0].evaluate_js(f"window.pywebview.updateProgress({i})")
+        case 3:
+            # 自動混合模式：依圖片實際寬高自動判斷方向，直式2張並排、橫式上下排佈
+            orientations = [_is_portrait(images[i]) for i in range(data.file_count)]
+            global_index = 1
+            i = 0
+            first_group = True
+            while i < data.file_count:
+                current_is_portrait = orientations[i]
+                group = []
+                while i < data.file_count and orientations[i] == current_is_portrait:
+                    group.append(images[i])
+                    i += 1
+                # 組與組之間加分頁（第一組不需要）
+                if not first_group:
+                    doc.add_page_break()
+                first_group = False
+                if current_is_portrait:
+                    # 直式：2張並排
+                    for j in range(0, len(group), 2):
+                        batch = group[j:j + 2]
+                        doc = add_table_two_of_page_vertical(doc, data.align_vertical, batch, global_index)
+                        global_index += len(batch)
+                        webview.windows[0].evaluate_js(f"window.pywebview.updateProgress({global_index - 1})")
+                else:
+                    # 橫式：上下排佈
+                    for img in group:
+                        doc = add_table_two_of_page_horizontal(doc, data.align_vertical, img, global_index)
+                        webview.windows[0].evaluate_js(f"window.pywebview.updateProgress({global_index})")
+                        global_index += 1
         case 4:
             section = doc.sections[-1]
             # 1. 取得原本的寬與高
@@ -370,10 +408,12 @@ def handle_table_write(image: SaveImage, align, index,
         elif align == 'center':
             remark_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER  # 表格文字垂直置中
 
-        # 處理圖片寬高
+        # 處理圖片寬高（先還原 stream 位置，確保每次都能正確讀取）
+        image.stream.seek(0)
         img = Image.open(image.stream)
         default_aspect_ratio = max_width / max_height  # 預設寬高比
         image_aspect_ratio = img.width / img.height  # 圖片寬高比
+        image.stream.seek(0)
         if image_aspect_ratio > default_aspect_ratio:
             # 圖片更扁，設定寬為表格上限
             image_cell.paragraphs[0].add_run().add_picture(image.stream, width=Cm(max_width))
