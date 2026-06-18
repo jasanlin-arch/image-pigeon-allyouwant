@@ -2,6 +2,24 @@
 
 `Version` **1.7.0**
 
+> 🍴 本專案 forked from [srhkami/image-pigeon](https://github.com/srhkami/image-pigeon)
+> 感謝原作者 **srhkami** 開發並開源這個實用的小工具！
+
+---
+
+### 🌟 本分支緣起
+
+本分支源於一個來自實務現場的許願：
+
+> **萬華分局警務員 沈育緯** 提出建議：
+> 「能否新增功能，讓同一份檔案裡面可以同時有直式圖片及橫式圖片並存？
+> （例如：第一頁 2 張直式、第二頁 2 張橫式、第三頁 2 張直式；
+> 或是第一頁 1 張直式、空一張、第二頁 2 張橫式、第三頁 2 張直式......）」
+
+為了實現這個需求，本分支在原版基礎上新增了混合排版、插入空白及合併復原等功能。
+
+---
+
 `What's New`
 - 新增自動混合排版：同一份 Word 可同時包含直式與橫式圖片，自動依圖片方向排版
 - 新增插入空白：可在任意位置插入空白佔位圖
@@ -59,4 +77,5 @@
 - 本程式使用 Python + React 編寫而成，除自動檢測更新功能外，其餘功能均不連網，不涉及任何上傳資料至網際網路的功能。
 - 本程式用途只限於將使用者指定的檔案，進行讀取、複製、壓縮、另存新檔等操作，不涉及任何刪除、修改原檔案的功能。
 - 如您對上列事項有任何顧慮，請立即關閉並刪除此軟體，否則視為您已同意本聲明。
-- 本程式原始碼分享於 [GitHub](https://github.com/jasanlin-arch/image-pigeon-allyouwant)，歡迎自行克隆倉庫運用。
+- 本分支原始碼分享於 [jasanlin-arch/image-pigeon-allyouwant](https://github.com/jasanlin-arch/image-pigeon-allyouwant)，歡迎自行克隆倉庫運用。
+- 原版程式原始碼請見 [srhkami/image-pigeon](https://github.com/srhkami/image-pigeon)。
