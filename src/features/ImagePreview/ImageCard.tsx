@@ -1,7 +1,7 @@
 import {useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import {CustomImage} from "@/utils/type.ts";
-import {MdOutlineCallMerge} from "react-icons/md";
+import {MdOutlineCallMerge, MdUndo, MdOutlineAddPhotoAlternate} from "react-icons/md";
 import {Button} from "@/component";
 import {FaArrowRotateLeft, FaArrowRotateRight, FaXmark} from "react-icons/fa6";
 import {SubmitHandler, useForm} from "react-hook-form";
@@ -83,7 +83,7 @@ export default function ImageCard({id, img, index, images, setImages}: Props) {
     toast(t => (
       <div className='w-52'>
         <div className='font-bold'>是否將本張圖片與上張圖片合併？</div>
-        <div className='text-sm text-error text-start'>此操作無法復原</div>
+        <div className='text-sm text-warning text-start'>合併後可點擊復原按鈕拆回</div>
         <div className='flex justify-end mt-2'>
           <button className='btn btn-sm btn-success' onClick={() => {
             toast.dismiss(t.id);
@@ -104,12 +104,11 @@ export default function ImageCard({id, img, index, images, setImages}: Props) {
       toast.error('沒有上一張圖')
       return
     }
-    // 初始化上一張圖片
     const imgA = await images[index - 1].init();
-    // 初始化本張圖片
     const imgB = await img.init();
     const mergedImage = await CustomImage.mergeSideBySide(imgA, imgB);
-    // 將圖片插入，並移除舊有圖片
+    // 儲存原始兩張圖片，供復原使用
+    mergedImage.mergedFrom = [images[index - 1], images[index]];
     const updatedImages = [
       ...images.slice(0, index - 1),
       mergedImage,
@@ -117,6 +116,32 @@ export default function ImageCard({id, img, index, images, setImages}: Props) {
     ];
     setImages(updatedImages);
     toast.success('合併成功')
+  }
+
+  // 復原合併
+  const handleUndoMerge = () => {
+    if (!img.mergedFrom) return;
+    const [imgA, imgB] = img.mergedFrom;
+    const updatedImages = [
+      ...images.slice(0, index),
+      imgA,
+      imgB,
+      ...images.slice(index + 1),
+    ];
+    setImages(updatedImages);
+    toast.success('已復原合併');
+  }
+
+  // 在本張圖片後插入空白
+  const handleInsertBlank = () => {
+    const blank = CustomImage.createBlank();
+    const updatedImages = [
+      ...images.slice(0, index + 1),
+      blank,
+      ...images.slice(index + 1),
+    ];
+    setImages(updatedImages);
+    toast.success(`已在編號 ${index + 1} 後插入空白`);
   }
 
   const classes = twMerge(
@@ -154,6 +179,16 @@ export default function ImageCard({id, img, index, images, setImages}: Props) {
         <Button color='info' style='ghost' shape='circle' title='與上圖合併'
                 onClick={handleCheckMerge}>
           <MdOutlineCallMerge className='text-xl'/>
+        </Button>
+        {img.mergedFrom && (
+          <Button color='warning' style='ghost' shape='circle' title='復原合併'
+                  onClick={handleUndoMerge}>
+            <MdUndo className='text-xl'/>
+          </Button>
+        )}
+        <Button color='success' style='ghost' shape='circle' title='在此後插入空白'
+                onClick={handleInsertBlank}>
+          <MdOutlineAddPhotoAlternate className='text-xl'/>
         </Button>
       </div>
       <figure className='relative aspect-video w-full max-w-xl overflow-hidden'>
