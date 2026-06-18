@@ -18,7 +18,7 @@ export interface OutputBaseData {
 }
 
 export interface OutputWord extends OutputBaseData {
-  mode: '1' | '2' | '4' | '6',
+  mode: '1' | '2' | '3' | '4' | '6',
   align_vertical: 'top' | 'center',
   font_size: '10' | '11' | '12' | '13' | '14',
 }
@@ -38,10 +38,11 @@ export class CustomImage {
   preview: string; //預覽
   remark: string;
 
-  base64: string | null = null; // 新增的欄位
+  base64: string | null = null;
   width: number | null = null;
   height: number | null = null;
   rotation: 0 | 90 | 180 | 270 = 0; // 預設角度為 0
+  mergedFrom: [CustomImage, CustomImage] | null = null; // 合併來源，用於復原
 
   constructor(file: File | null, remark: string) {
     this.id = crypto.randomUUID();
@@ -123,6 +124,28 @@ export class CustomImage {
     });
   }
 
+  /* 建立空白佔位圖片 */
+  static createBlank(): CustomImage {
+    const canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 600;
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 800, 600);
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = 'bold 72px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('（空白）', 400, 300);
+    const base64 = canvas.toDataURL('image/png');
+    const blank = new CustomImage(null, '');
+    blank.preview = base64;
+    blank.base64 = base64;
+    blank.width = 800;
+    blank.height = 600;
+    return blank;
+  }
+
   /* 修改說明 */
   editRemark(newRemark: string) {
     this.remark = newRemark;
@@ -130,7 +153,7 @@ export class CustomImage {
 
   /* 修改角度 */
   setRotation(value: 0 | 90 | 180 | 270) {
-    this.rotation = value; // 角度保持在 0~359
+    this.rotation = value;
   }
 }
 
