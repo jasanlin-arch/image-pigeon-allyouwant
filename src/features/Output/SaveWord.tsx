@@ -77,6 +77,7 @@ export default function SaveWord({images}: Props) {
           <option value=''>請選擇</option>
           <option value='1'>一頁 2 張（直印 / 上下排佈 / 適用橫式圖片）</option>
           <option value='2'>一頁 2 張（直印 / 左右排佈 / 適用直式圖片）</option>
+          <option value='3'>自動混合（依圖片方向自動排佈 / 直式左右、橫式上下）</option>
           <option value='4'>一頁 4 張（橫印 / 左右排佈 / 適用直式圖片）</option>
           <option value='6'>一頁 6 張（直印 / 分散排佈 / 適用直式圖片）</option>
         </select>
